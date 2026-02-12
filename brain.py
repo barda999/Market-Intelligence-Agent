@@ -46,7 +46,9 @@ class MarketIntelligenceBrain:
         Logic: Checks for L1 Locks (DFW). If found, returns static data.
         Else, asks AI to generate estimates.
         """
-        if dma == "Dallas-Fort Worth":
+        # Normalize input string to handle user variations
+        normalized_dma = dma.lower().strip()
+        if "dallas" in normalized_dma or "dfw" in normalized_dma:
             # Level 1 Lock triggered
             time.sleep(0.5) # Simulate processing
             return DFW_HLRL_LOCKS
@@ -109,7 +111,6 @@ class MarketIntelligenceBrain:
         """
         Research Lab Chat.
         """
-        # Simple non-streaming implementation for Streamlit compatibility ease
         try:
             response = self.client.models.generate_content(
                 model=self.model_id,
