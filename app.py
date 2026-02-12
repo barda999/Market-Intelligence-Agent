@@ -98,19 +98,16 @@ with st.sidebar:
     st.divider()
     st.markdown("### 📍 Location Scope")
     
-    dma_options = ["Dallas DFW DMA", "Houston", "Austin", "San Antonio", "Other..."]
-    dma_selection = st.selectbox("Select Market", dma_options)
+    # Unified Search Input
+    dma_input = st.text_input("Target Market / DMA", value="Dallas DFW", help="Enter any city, state, or DMA region to analyze.")
     
-    selected_dma = None
-    if dma_selection == "Other...":
-        user_input = st.text_input("Enter Market Name", placeholder="e.g. Phoenix, AZ")
-        if user_input:
-            selected_dma = user_input
-    else:
-        selected_dma = dma_selection
+    selected_dma = dma_input.strip()
 
     if selected_dma:
-        st.success(f"Locked: {selected_dma}")
+        if "dallas" in selected_dma.lower() or "dfw" in selected_dma.lower():
+             st.success("🔒 locked: DFW Market Data (Internal)")
+        else:
+             st.info(f"🌍 Scope: {selected_dma}")
 
 # --- PAGE 1: MARKET MATRIX ---
 if selected_page == "Market Matrix":

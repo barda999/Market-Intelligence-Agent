@@ -1,7 +1,9 @@
 export interface MarketData {
   dsoName: string;
+  geographicFocus: string;
   clinicCount: number;
   dentistCount: number;
+  dentistsPerClinic?: number;
   surgeonCount: number;
   priceDenture: number | 'TBD';
   priceTier1Low: number | 'TBD';

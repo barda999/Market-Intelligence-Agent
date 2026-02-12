@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MarketData } from '../types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface MarketMatrixProps {
   data: MarketData[];
@@ -9,6 +9,8 @@ interface MarketMatrixProps {
 }
 
 const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh }) => {
+  const [filter, setFilter] = useState('');
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-10 space-y-4">
@@ -19,8 +21,13 @@ const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh 
     );
   }
 
+  // Filter Data
+  const filteredData = data.filter(d => 
+    d.dsoName.toLowerCase().includes(filter.toLowerCase())
+  );
+
   // Prepare data for chart (filtering out TBDs for visualization)
-  const chartData = data.map(d => ({
+  const chartData = filteredData.map(d => ({
     name: d.dsoName,
     "Denture Price": d.priceDenture === 'TBD' ? 0 : d.priceDenture,
     "Tier 1 Low": d.priceTier1Low === 'TBD' ? 0 : d.priceTier1Low,
@@ -57,11 +64,23 @@ const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh 
             <p className="text-2xl font-bold text-gray-800">{data.reduce((acc, curr) => acc + curr.surgeonCount, 0)}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-sm text-gray-500">Avg Denture Price</p>
+            <p className="text-sm text-gray-500">Avg Economy Denture</p>
             <p className="text-2xl font-bold text-green-600">
                 ${(data.filter(d => typeof d.priceDenture === 'number').reduce((acc, curr) => acc + (curr.priceDenture as number), 0) / (data.filter(d => typeof d.priceDenture === 'number').length || 1)).toFixed(0)}
             </p>
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative">
+          <input 
+            type="text" 
+            placeholder="Filter by DSO Name..." 
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+          <svg className="w-5 h-5 text-gray-400 absolute top-2.5 right-full md:left-[31%] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
       </div>
 
       {/* Table */}
@@ -71,6 +90,7 @@ const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh 
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DSO Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Geo Focus</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clinics</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dentists</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Surgeons</th>
@@ -80,9 +100,10 @@ const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh 
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {data.map((row, idx) => (
-                <tr key={idx} className="hover:bg-gray-50 transition-colors">
+              {filteredData.map((row, idx) => (
+                <tr key={idx} className={`hover:bg-gray-50 transition-colors ${(row.dsoName.includes('AD&I') || row.dsoName.includes('Affordable')) ? 'bg-blue-50' : ''}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.dsoName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.geographicFocus}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.clinicCount}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.dentistCount}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.surgeonCount}</td>
@@ -99,27 +120,32 @@ const MarketMatrix: React.FC<MarketMatrixProps> = ({ data, isLoading, onRefresh 
               ))}
             </tbody>
           </table>
+          {filteredData.length === 0 && (
+              <div className="p-8 text-center text-gray-500">No competitors found matching your search.</div>
+          )}
         </div>
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Pricing Landscape Analysis</h3>
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis unit="$" />
-              <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
-              <Legend />
-              <Bar dataKey="Denture Price" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Tier 1 Low" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Tier 1 High" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {filteredData.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Pricing Landscape Analysis</h3>
+            <div className="h-80 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{fontSize: 12}} interval={0} angle={-45} textAnchor="end" height={80} />
+                  <YAxis unit="$" />
+                  <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                  <Legend verticalAlign="top" height={36}/>
+                  <Bar dataKey="Denture Price" fill="#93c5fd" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Tier 1 Low" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Tier 1 High" fill="#1e40af" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+      )}
     </div>
   );
 };

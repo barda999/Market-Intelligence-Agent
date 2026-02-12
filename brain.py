@@ -5,23 +5,23 @@ from google import genai
 from google.genai import types
 
 # --- LEVEL 1: ABSOLUTE TRUTH (HLRL LOCKS) ---
-# Hardcoded data for DFW as provided by the user.
+# Updated with data provided from CSV
 DFW_HLRL_LOCKS = [
-  { "dsoName": "Ideal Dental (DECA)", "geographicFocus": "National", "dentistCount": 136, "clinicCount": 65, "dentistsPerClinic": 2.09, "surgeonCount": 12, "priceDenture": 650, "priceTier1Low": 1000, "priceTier1High": 1500 },
-  { "dsoName": "Smile Brands", "geographicFocus": "National", "dentistCount": 50, "clinicCount": 51, "dentistsPerClinic": 0.98, "surgeonCount": 8, "priceDenture": 650, "priceTier1Low": 950, "priceTier1High": 1350 },
-  { "dsoName": "Jefferson Dental", "geographicFocus": "Regional", "dentistCount": 40, "clinicCount": 35, "dentistsPerClinic": 1.14, "surgeonCount": 6, "priceDenture": 550, "priceTier1Low": 699, "priceTier1High": 1100 },
-  { "dsoName": "Pacific Dental (PDS)", "geographicFocus": "National", "dentistCount": 38, "clinicCount": 35, "dentistsPerClinic": 1.09, "surgeonCount": 10, "priceDenture": 700, "priceTier1Low": 1100, "priceTier1High": 1600 },
-  { "dsoName": "Heartland Dental", "geographicFocus": "National", "dentistCount": 45, "clinicCount": 30, "dentistsPerClinic": 1.5, "surgeonCount": 8, "priceDenture": 1100, "priceTier1Low": 1100, "priceTier1High": 1600 },
-  { "dsoName": "AD&I/DDS", "geographicFocus": "National", "dentistCount": 45, "clinicCount": 22, "dentistsPerClinic": 2.05, "surgeonCount": 6, "priceDenture": 599, "priceTier1Low": 800, "priceTier1High": 1200 },
-  { "dsoName": "Aspen Dental", "geographicFocus": "National", "dentistCount": 19, "clinicCount": 20, "dentistsPerClinic": 0.95, "surgeonCount": 4, "priceDenture": 499, "priceTier1Low": 1100, "priceTier1High": 1400 },
-  { "dsoName": "Great Expressions", "geographicFocus": "National", "dentistCount": 8, "clinicCount": 8, "dentistsPerClinic": 1, "surgeonCount": 2, "priceDenture": 850, "priceTier1Low": 850, "priceTier1High": 1250 },
-  { "dsoName": "Sage Dental", "geographicFocus": "Regional", "dentistCount": 6, "clinicCount": 6, "dentistsPerClinic": 1, "surgeonCount": 1, "priceDenture": 800, "priceTier1Low": 900, "priceTier1High": 1350 },
-  { "dsoName": "Archpoint ID", "geographicFocus": "Local", "dentistCount": 5, "clinicCount": 3, "dentistsPerClinic": 1.67, "surgeonCount": 2, "priceDenture": "TBD", "priceTier1Low": 1500, "priceTier1High": 3000 },
-  { "dsoName": "ClearChoice", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 3, "dentistsPerClinic": 1, "surgeonCount": 3, "priceDenture": "TBD", "priceTier1Low": "TBD", "priceTier1High": "TBD" },
-  { "dsoName": "Texas Implant & Dental", "geographicFocus": "Local", "dentistCount": 4, "clinicCount": 2, "dentistsPerClinic": 2, "surgeonCount": 1, "priceDenture": 895, "priceTier1Low": 895, "priceTier1High": 1700 },
-  { "dsoName": "Fast New Smile", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 2, "dentistsPerClinic": 1.5, "surgeonCount": 3, "priceDenture": "TBD", "priceTier1Low": "TBD", "priceTier1High": "TBD" },
-  { "dsoName": "Nuvia", "geographicFocus": "Local", "dentistCount": 4, "clinicCount": 2, "dentistsPerClinic": 2, "surgeonCount": 4, "priceDenture": "TBD", "priceTier1Low": 2500, "priceTier1High": 3000 },
-  { "dsoName": "New Choice Dentures", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 1, "dentistsPerClinic": 3, "surgeonCount": 1, "priceDenture": 550, "priceTier1Low": 795, "priceTier1High": 1500 }
+    {"dsoName": "Ideal Dental (DECA)", "geographicFocus": "National", "dentistCount": 136, "clinicCount": 65, "dentistsPerClinic": 2.09, "surgeonCount": 12, "priceDenture": 650, "priceTier1Low": 1000, "priceTier1High": 1500},
+    {"dsoName": "Smile Brands", "geographicFocus": "National", "dentistCount": 50, "clinicCount": 51, "dentistsPerClinic": 0.98, "surgeonCount": 8, "priceDenture": 650, "priceTier1Low": 950, "priceTier1High": 1350},
+    {"dsoName": "Jefferson Dental", "geographicFocus": "Regional", "dentistCount": 40, "clinicCount": 35, "dentistsPerClinic": 1.14, "surgeonCount": 6, "priceDenture": 550, "priceTier1Low": 699, "priceTier1High": 1100},
+    {"dsoName": "Pacific Dental (PDS)", "geographicFocus": "National", "dentistCount": 38, "clinicCount": 35, "dentistsPerClinic": 1.09, "surgeonCount": 10, "priceDenture": 700, "priceTier1Low": 1100, "priceTier1High": 1600},
+    {"dsoName": "Heartland Dental", "geographicFocus": "National", "dentistCount": 45, "clinicCount": 30, "dentistsPerClinic": 1.5, "surgeonCount": 8, "priceDenture": 1100, "priceTier1Low": 1100, "priceTier1High": 1600},
+    {"dsoName": "AD&I/DDS", "geographicFocus": "National", "dentistCount": 45, "clinicCount": 22, "dentistsPerClinic": 2.05, "surgeonCount": 6, "priceDenture": 499, "priceTier1Low": 800, "priceTier1High": 1200},
+    {"dsoName": "Aspen Dental", "geographicFocus": "National", "dentistCount": 19, "clinicCount": 20, "dentistsPerClinic": 0.95, "surgeonCount": 4, "priceDenture": 499, "priceTier1Low": 1100, "priceTier1High": 1400},
+    {"dsoName": "Great Expressions", "geographicFocus": "National", "dentistCount": 8, "clinicCount": 8, "dentistsPerClinic": 1, "surgeonCount": 2, "priceDenture": 850, "priceTier1Low": 850, "priceTier1High": 1250},
+    {"dsoName": "Sage Dental", "geographicFocus": "Regional", "dentistCount": 6, "clinicCount": 6, "dentistsPerClinic": 1, "surgeonCount": 1, "priceDenture": 800, "priceTier1Low": 900, "priceTier1High": 1350},
+    {"dsoName": "Archpoint ID", "geographicFocus": "Local", "dentistCount": 5, "clinicCount": 3, "dentistsPerClinic": 1.67, "surgeonCount": 2, "priceDenture": "TBD", "priceTier1Low": 1500, "priceTier1High": 3000},
+    {"dsoName": "ClearChoice", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 3, "dentistsPerClinic": 1, "surgeonCount": 3, "priceDenture": "TBD", "priceTier1Low": "TBD", "priceTier1High": "TBD"},
+    {"dsoName": "Texas Implant & Dental", "geographicFocus": "Local", "dentistCount": 4, "clinicCount": 2, "dentistsPerClinic": 2, "surgeonCount": 1, "priceDenture": 895, "priceTier1Low": 895, "priceTier1High": 1700},
+    {"dsoName": "Fast New Smile", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 2, "dentistsPerClinic": 1.5, "surgeonCount": 3, "priceDenture": "TBD", "priceTier1Low": "TBD", "priceTier1High": "TBD"},
+    {"dsoName": "Nuvia", "geographicFocus": "Local", "dentistCount": 4, "clinicCount": 2, "dentistsPerClinic": 2, "surgeonCount": 4, "priceDenture": "TBD", "priceTier1Low": 2500, "priceTier1High": 3000},
+    {"dsoName": "New Choice Dentures", "geographicFocus": "Local", "dentistCount": 3, "clinicCount": 1, "dentistsPerClinic": 3, "surgeonCount": 1, "priceDenture": 550, "priceTier1Low": 795, "priceTier1High": 1500}
 ]
 
 SYSTEM_INSTRUCTION = """
@@ -48,6 +48,8 @@ class MarketIntelligenceBrain:
         """
         # Normalize input string to handle user variations
         normalized_dma = dma.lower().strip()
+        
+        # Check for DFW triggers
         if "dallas" in normalized_dma or "dfw" in normalized_dma:
             # Level 1 Lock triggered - Return the absolute truth table
             time.sleep(0.5) 
