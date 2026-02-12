@@ -46,7 +46,9 @@ class GeminiService {
   private model: string = 'gemini-2.0-flash'; // Optimized for speed/json
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    this.ai = new GoogleGenAI({
+      apiKey: import.meta.env.VITE_API_KEY,
+    });
   }
 
   // Helper to clean JSON from Markdown
@@ -74,7 +76,7 @@ class GeminiService {
     }
 
     // Level 3: AI Discovery for other markets
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
     const prompt = `Conduct a market analysis for the "${dma}" DMA (Designated Market Area). 
     1. Use Google Search to identify the top 10-15 Dental Service Organizations (DSOs) and key implant competitors operating in this specific region.
@@ -126,7 +128,7 @@ class GeminiService {
 
   // Generate Competitor Details (Page 2 Data)
   async generateCompetitorDetails(dma: string, dsoName: string): Promise<CompetitorDetail> {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
     const prompt = `Deep dive on "${dsoName}" in ${dma}. 
     Return a STRICT JSON OBJECT with keys: 
@@ -159,7 +161,7 @@ class GeminiService {
 
   // General Chat
   async chatWithAgent(message: string, history: any[]) {
-      this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY }); 
+      this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY }); 
       
       const chat = this.ai.chats.create({
           model: 'gemini-2.0-flash',
@@ -176,7 +178,7 @@ class GeminiService {
   // Image Generation (Nano Banana Pro)
   async generateImage(prompt: string, size: '1K' | '2K' | '4K' = '1K', aspectRatio: string = '1:1') {
       const model = size === '1K' ? 'gemini-2.5-flash-image' : 'gemini-3-pro-image-preview';
-      this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
       try {
         const response = await this.ai.models.generateContent({
@@ -204,7 +206,7 @@ class GeminiService {
 
   // Veo Video Generation
   async generateVideo(prompt: string) {
-       this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+       this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
        try {
         let operation = await this.ai.models.generateVideos({
@@ -223,7 +225,7 @@ class GeminiService {
         }
         
         const uri = operation.response?.generatedVideos?.[0]?.video?.uri;
-        if (uri) return `${uri}&key=${process.env.API_KEY}`;
+        if (uri) return `${uri}&key=${import.meta.env.VITE_API_KEY}`;
         return null;
 
        } catch (e) {
